@@ -15,6 +15,7 @@ type FileStat struct {
 }
 
 func ParseDiff(r io.Reader) ([]FileStat, error) {
+	// TODO: parse git diff --numstat
 	groupedStats := make(map[string]FileStat)
 	scanner := bufio.NewScanner(r)
 	scanner.Split(bufio.ScanLines)
