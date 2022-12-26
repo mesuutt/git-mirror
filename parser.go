@@ -20,6 +20,10 @@ type Parser struct {
 }
 
 func NewParser(allowedTypes []string) Parser {
+	if allowedTypes == nil {
+		return Parser{}
+	}
+
 	// converting to map for find with O(1)
 	types := make(map[string]struct{}, len(allowedTypes))
 	for _, v := range allowedTypes {
@@ -29,6 +33,7 @@ func NewParser(allowedTypes []string) Parser {
 	return Parser{allowedTypes: types}
 }
 
+// Parse parses diff output and create stat for each file type
 func (p *Parser) Parse(r io.Reader) ([]FileStat, error) {
 	groupedStats := make(map[string]FileStat)
 	scanner := bufio.NewScanner(r)
@@ -57,8 +62,10 @@ func (p *Parser) Parse(r io.Reader) ([]FileStat, error) {
 			}
 		}
 
-		if _, ok := p.allowedTypes[ext]; !ok {
-			continue
+		if p.allowedTypes != nil {
+			if _, ok := p.allowedTypes[strings.Replace(ext, ".", "", 1)]; !ok {
+				continue
+			}
 		}
 
 		s, ok := groupedStats[ext]

@@ -19,6 +19,7 @@ func NewRepo(path string) Repo {
 	return Repo{path: path}
 }
 
+// AddStats writes diff stats to related files in mirror repo
 func (r Repo) AddStats(fs afero.Fs, stats ...FileStat) error {
 	now := time.Now()
 	dir := filepath.Join(r.path, strconv.Itoa(now.Year()), strconv.Itoa(int(now.Month())), strconv.Itoa(now.Day()))

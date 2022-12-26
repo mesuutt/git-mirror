@@ -24,11 +24,11 @@ func TestParse(t *testing.T) {
 	}
 
 	expected := map[string][]int{
-		"go":       {2, 4},
-		"rs":       {2, 3},
-		"txt":      {1, 0},
-		"json":     {19, 6},
-		"py":       {10, 2},
+		".go":      {2, 4},
+		".rs":      {2, 3},
+		".txt":     {1, 0},
+		".json":    {19, 6},
+		".py":      {10, 2},
 		"Makefile": {1, 2},
 	}
 
@@ -43,30 +43,44 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func TestParseOnlyAllowedFileTypes(t *testing.T) {
+func TestParseWithAllowedFileTypes(t *testing.T) {
 	input := `
 1       2       a.go
 1       0       a.txt
 1       2       Makefile
 `
-	allowedTypes := []string{"go", "Makefile"}
-	p := NewParser(allowedTypes)
 
-	result, err := p.Parse(strings.NewReader(input))
-	if err != nil {
-		t.Fatal(err)
+	tests := []struct {
+		name            string
+		allowedTypes    []string
+		expectedStatLen int
+	}{
+		{
+			name:            "types given",
+			allowedTypes:    []string{"go", "Makefile"},
+			expectedStatLen: 2,
+		},
+
+		{
+			name:            "types not given",
+			allowedTypes:    nil,
+			expectedStatLen: 3,
+		},
 	}
 
-	for _, v := range result {
-		var allowed bool
-		for _, t := range allowedTypes {
-			if v.Ext == t {
-				allowed = true
-			}
-		}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
 
-		if !allowed {
-			t.Errorf("not allowed extension parsed: %s", v.Ext)
-		}
+			p := NewParser(tt.allowedTypes)
+			result, err := p.Parse(strings.NewReader(input))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if len(result) != tt.expectedStatLen {
+				t.Errorf("parsed file change count is different. want %d, got: %d", tt.expectedStatLen, len(result))
+			}
+		})
 	}
 }
