@@ -57,9 +57,6 @@ func (p *Parser) Parse(r io.Reader) ([]FileStat, error) {
 			}
 		}
 
-		// clear dot from extension
-		ext = strings.Replace(ext, ".", "", 1)
-
 		if _, ok := p.allowedTypes[ext]; !ok {
 			continue
 		}

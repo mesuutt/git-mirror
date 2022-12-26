@@ -1,18 +1,60 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"github.com/spf13/afero"
+	"testing"
+	"time"
+)
 
 func TestRepo_AddChange(t *testing.T) {
-	// TODO: use afero
-	repo := NewRepo("/tmp/git_activity/")
+	appFS := afero.NewMemMapFs()
+	repo := NewRepo("/repo")
 
-	err := repo.AddStat(FileStat{
-		Insert: 1,
-		Delete: 2,
-		Ext:    "go",
-	})
+	now := time.Now()
+	tests := []struct {
+		name    string
+		stats   []FileStat
+		path    string
+		content string
+	}{
+		{
+			name:    "one commit",
+			stats:   []FileStat{{Insert: 1, Delete: 2, Ext: ".go"}},
+			path:    fmt.Sprintf("/repo/%d/%d/%d/log.go", now.Year(), now.Month(), now.Day()),
+			content: "1 insertion(s), 2 deletion(s)\n",
+		},
+		{
+			name:    "same file type, two commit",
+			stats:   []FileStat{{Insert: 1, Delete: 2, Ext: ".rs"}, {Insert: 2, Delete: 2, Ext: ".rs"}},
+			path:    fmt.Sprintf("/repo/%d/%d/%d/log.rs", now.Year(), now.Month(), now.Day()),
+			content: "1 insertion(s), 2 deletion(s)\n2 insertion(s), 2 deletion(s)\n",
+		},
+		{
+			name:    "file without extension",
+			stats:   []FileStat{{Insert: 1, Delete: 2, Ext: "Makefile"}},
+			path:    fmt.Sprintf("/repo/%d/%d/%d/Makefile", now.Year(), now.Month(), now.Day()),
+			content: "1 insertion(s), 2 deletion(s)\n",
+		},
+	}
 
-	if err != nil {
-		t.Fatal(err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := repo.AddStats(appFS, tt.stats...)
+			if err != nil {
+				t.Errorf("stat add failed: %v", err)
+			}
+			exists, _ := afero.Exists(appFS, tt.path)
+
+			if !exists {
+				t.Fatalf("expected stat file not found in desired path: %s", tt.path)
+			}
+
+			content, _ := afero.ReadFile(appFS, tt.path)
+
+			if string(content) != tt.content {
+				t.Fatalf("file content not mathed. want: `%s`, got: `%s`", tt.content, string(content))
+			}
+		})
 	}
 }
