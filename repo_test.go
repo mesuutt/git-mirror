@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/spf13/afero"
 	"testing"
 	"time"
+
+	"github.com/spf13/afero"
 )
 
 func TestRepo_AddChange(t *testing.T) {
