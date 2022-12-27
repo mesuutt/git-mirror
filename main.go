@@ -1,9 +1,12 @@
 package main
 
-func main() {
-	/*out, err := exec.Command("git", " diff", "--stat", "HEAD~1").Output()
-	if err != nil {
-		log.Fatal(err)
-	}*/
+import (
+	"log"
+	"os"
+)
 
+func main() {
+	if err := InitApp().Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
 }
