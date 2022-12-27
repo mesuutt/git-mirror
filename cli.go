@@ -2,17 +2,18 @@ package main
 
 import (
 	"fmt"
+	"path"
 
 	"github.com/urfave/cli/v2"
 )
 
-func InitApp() *cli.App {
+func InitCLI(homeDir string) *cli.App {
 	return &cli.App{
 		Usage: "git activity mirror",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "repo",
-				Value: "~/.git-mirror", // TODO: windows?
+				Value: fmt.Sprintf(path.Join(homeDir, ".git-mirror")),
 				Usage: "git repo directory path of the mirror repo",
 			},
 			&cli.StringFlag{
