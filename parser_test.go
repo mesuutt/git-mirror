@@ -49,7 +49,6 @@ func TestParseWithAllowedFileTypes(t *testing.T) {
 1       0       a.txt
 1       2       Makefile
 `
-
 	tests := []struct {
 		name            string
 		allowedTypes    []string
@@ -60,7 +59,6 @@ func TestParseWithAllowedFileTypes(t *testing.T) {
 			allowedTypes:    []string{"go", "Makefile"},
 			expectedStatLen: 2,
 		},
-
 		{
 			name:            "types not given",
 			allowedTypes:    nil,

@@ -55,9 +55,12 @@ func (p *Parser) Parse(r io.Reader) ([]FileStat, error) {
 		if ext == "" {
 			// If file does not have an extension
 			// search in allowed types and use filename
+			// if allowed types not given that means we can use filename too
 			// eg: Makefile
 			filename := parts[len(parts)-1]
-			if _, ok := p.allowedTypes[filename]; ok {
+			if p.allowedTypes == nil {
+				ext = filename
+			} else if _, ok := p.allowedTypes[filename]; ok {
 				ext = filename
 			}
 		}
