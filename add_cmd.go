@@ -31,6 +31,8 @@ func AddCmd(cCtx *cli.Context) error {
 		log.Fatal(err)
 	}
 
+	// TODO: ignore already added commit
+	// if user run add multiple times without new commit, it should add only one commit to repo
 	repo := NewRepo(statRepoPath)
 	parser := NewParser(nil)
 	stats, err := parser.Parse(bytes.NewReader(out))

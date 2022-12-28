@@ -25,13 +25,10 @@ func InitCLI(homeDir string) *cli.App {
 		},
 		Commands: []*cli.Command{
 			{
-				Name:  "install",
-				Usage: "install post-commit hook for adding stats automatically",
-				Action: func(cCtx *cli.Context) error {
-					// TODO
-					fmt.Println("post-commit installed at .git/hooks/post-commit")
-					return nil
-				},
+				Name:            "install",
+				Usage:           "install post-commit hook for adding stats automatically",
+				SkipFlagParsing: true,
+				Action:          InstallHookCmd,
 			},
 			{
 				Name:  "add",
