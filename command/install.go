@@ -22,7 +22,7 @@ func InstallHookCmd(cCtx *cli.Context) error {
 	}
 
 	hookFilePath := filepath.Join(hookDir, "post-commit")
-	f, err := os.OpenFile(hookFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(hookFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	if err != nil {
 		log.Fatalf("%s file could not open for adding hook", hookFilePath)
 	}
