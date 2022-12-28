@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"os"
+
+	"gitmirror/command"
 )
 
 func main() {
@@ -11,7 +13,7 @@ func main() {
 		log.Fatalf("user home directory path getting failed: %v", err)
 	}
 
-	if err := InitCLI(homeDir).Run(os.Args); err != nil {
+	if err := command.InitCLI(homeDir).Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -1,4 +1,4 @@
-package main
+package command
 
 import (
 	"fmt"
@@ -31,7 +31,7 @@ func InstallHookCmd(cCtx *cli.Context) error {
 
 	// TODO: get app name from args (git-mirror)
 	if _, err := f.WriteString("git-mirror add"); err != nil {
-		return fmt.Errorf("hook add failed to post-commit file. error: %v", err)
+		log.Fatalf("hook add failed to post-commit file. error: %v", err)
 	}
 
 	fmt.Printf("post-commit hook installed at %s\n", hookFilePath)

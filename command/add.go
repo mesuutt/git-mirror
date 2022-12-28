@@ -1,7 +1,8 @@
-package main
+package command
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -9,6 +10,8 @@ import (
 
 	"github.com/spf13/afero"
 	"github.com/urfave/cli/v2"
+
+	"gitmirror"
 )
 
 func AddCmd(cCtx *cli.Context) error {
@@ -28,17 +31,22 @@ func AddCmd(cCtx *cli.Context) error {
 
 	out, err := exec.Command("git", "-C", repoPath, "diff", "--numstat", "HEAD~1").Output()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("`git -C %s diff --numstat HEAD~1` command execution failed. error %v", repoPath, err)
 	}
 
 	// TODO: ignore already added commit
 	// if user run add multiple times without new commit, it should add only one commit to repo
-	repo := NewRepo(statRepoPath)
-	parser := NewParser(nil)
+	repo := gitmirror.NewRepo(statRepoPath)
+	parser := gitmirror.NewParser(nil)
 	stats, err := parser.Parse(bytes.NewReader(out))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return repo.AddStats(fs, stats...)
+	if err := repo.AddStats(fs, stats...); err != nil {
+		return err
+	}
+
+	fmt.Println("commit stats added to git-mirror repository")
+	return nil
 }
