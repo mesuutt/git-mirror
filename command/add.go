@@ -15,6 +15,7 @@ import (
 )
 
 func AddCmd(cCtx *cli.Context) error {
+	// TODO: ignore merge commits
 	fs := afero.NewOsFs()
 	statRepoPath := cCtx.String("repo")
 	repoPath := cCtx.String("path")

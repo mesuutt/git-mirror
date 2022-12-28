@@ -21,6 +21,7 @@ func InstallHookCmd(cCtx *cli.Context) error {
 		}
 	}
 
+	// TODO: in test check file is executable
 	hookFilePath := filepath.Join(hookDir, "post-commit")
 	f, err := os.OpenFile(hookFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	if err != nil {
