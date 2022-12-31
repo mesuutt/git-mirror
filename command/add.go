@@ -14,6 +14,7 @@ import (
 	"gitmirror"
 )
 
+// AddCmd add stats of the latest commit to mirror repository
 func AddCmd(cCtx *cli.Context) error {
 	// TODO: ignore merge commits
 	fs := afero.NewOsFs()

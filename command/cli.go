@@ -1,9 +1,11 @@
 package command
 
 import (
+	"context"
 	"fmt"
 	"path"
 
+	"github.com/spf13/afero"
 	"github.com/urfave/cli/v2"
 )
 
@@ -22,6 +24,10 @@ func InitCLI(homeDir string) *cli.App {
 				Usage:   "comma seperated file extensions to create stats. eg: py,go,sh,Makefile",
 				EnvVars: []string{"GIT_MIRROR_FILE_TYPE_WHITELIST"},
 			},
+		},
+		Before: func(ctx *cli.Context) error {
+			ctx.Context = context.WithValue(ctx.Context, "fs", afero.NewOsFs())
+			return nil
 		},
 		Commands: []*cli.Command{
 			{
