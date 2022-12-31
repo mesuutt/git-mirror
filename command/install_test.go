@@ -26,10 +26,9 @@ func TestInstallHookCmd(t *testing.T) {
 	command := cli.Command{Action: InstallHookCmd}
 	err := command.Run(ctx, []string{"install"}...)
 
+	// then
 	assert.Nil(t, err)
-
-	f, _ := fs.OpenFile(hookFile, os.O_RDONLY, os.ModePerm)
-	contains, err := afero.FileContainsBytes(fs, f.Name(), []byte("git-mirror add"))
+	contains, err := afero.FileContainsBytes(fs, hookFile, []byte("git-mirror add"))
 
 	assert.Nil(t, err)
 	assert.True(t, contains)
