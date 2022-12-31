@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/afero"
 	"github.com/urfave/cli/v2"
@@ -39,7 +40,12 @@ func AddCmd(cCtx *cli.Context) error {
 	// TODO: ignore already added commit
 	// if user run add multiple times without new commit, it should add only one commit to repo
 	repo := gitmirror.NewRepo(statRepoPath)
-	parser := gitmirror.NewParser(nil)
+	var allowedTypes []string
+	if cCtx.String("whitelist") != "" { // TODO: write test for this if
+		allowedTypes = strings.Split(cCtx.String("whitelist"), ",")
+	}
+
+	parser := gitmirror.NewParser(allowedTypes)
 	stats, err := parser.Parse(bytes.NewReader(out))
 	if err != nil {
 		log.Fatal(err)
