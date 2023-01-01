@@ -15,7 +15,7 @@ func TestAddCmd_ValidateRunRepo(t *testing.T) {
 
 	app := App()
 
-	err := app.Run([]string{"greet", "add", "--path=" + runPath})
+	err := app.Run([]string{"executable-name", "add", "--path=" + runPath})
 	assert.ErrorContains(t, err, "is not a git repository")
 }
 
@@ -28,7 +28,7 @@ func TestAddCmd_ValidateStatsRepo(t *testing.T) {
 
 	app := App()
 
-	err := app.Run([]string{"greet", "--repo=" + notExistingPath, "add", "--path=" + runRepoPath})
+	err := app.Run([]string{"executable-name", "--repo=" + notExistingPath, "add", "--path=" + runRepoPath})
 	assert.ErrorContains(t, err, "is not a git repository")
 }
 
