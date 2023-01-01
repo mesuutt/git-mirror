@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/afero"
-
 	"gitmirror/git"
 )
 
@@ -22,11 +20,11 @@ func NewRepo(path string) Repo {
 }
 
 // AddStats writes diff stats to related files in mirror repo
-func (r Repo) AddStats(fs afero.Fs, stats ...FileStat) error {
+func (r Repo) AddStats(stats ...FileStat) error {
 	now := time.Now()
 	dir := filepath.Join(r.path, strconv.Itoa(now.Year()), strconv.Itoa(int(now.Month())), strconv.Itoa(now.Day()))
 
-	if err := fs.MkdirAll(dir, os.ModePerm); err != nil {
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return fmt.Errorf("directory could not created: `%s`. error: %w", dir, err)
 	}
 
@@ -41,7 +39,7 @@ func (r Repo) AddStats(fs afero.Fs, stats ...FileStat) error {
 
 		filePath := filepath.Join(dir, filename)
 
-		f, err := fs.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		f, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			return fmt.Errorf("file could not be opened for appending changes: `%s`. error: %w", filePath, err)
 		}

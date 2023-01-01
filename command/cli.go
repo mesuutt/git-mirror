@@ -26,23 +26,12 @@ func App() *cli.App {
 			&cli.StringFlag{
 				Name:    "whitelist",
 				Value:   "",
-				Usage:   "comma seperated file extensions to create stats. eg: py,go,sh,Makefile",
+				Usage:   "comma seperated file extensions to create stats. eg: go,rs,sh,Makefile",
 				EnvVars: []string{"GIT_MIRROR_FILE_TYPE_WHITELIST"},
 			},
 		},
 		Commands: []*cli.Command{
-			{
-				Name:  "install",
-				Usage: "install post-commit hook for adding stats automatically",
-				Flags: []cli.Flag{
-					&cli.PathFlag{
-						Name:  "path",
-						Value: ".",
-						Usage: "git repo to install post-commit hook",
-					},
-				},
-				Action: InstallHookCmd,
-			},
+			InstallCmd,
 			AddCmd,
 		},
 	}

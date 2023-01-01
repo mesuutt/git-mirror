@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/spf13/afero"
 	"github.com/urfave/cli/v2"
 
 	"gitmirror"
@@ -44,19 +43,25 @@ func AddCmdAction(ctx *cli.Context) error {
 		return err
 	}
 
-	whitelist := strings.Split(ctx.String("whitelist"), ",")
-	parser := gitmirror.NewParser().WithWhitelist(whitelist)
+	parser := gitmirror.NewParser()
+
+	if ctx.String("whitelist") != "" {
+		parser = parser.WithWhitelist(strings.Split(ctx.String("whitelist"), ","))
+	}
 
 	stats, err := parser.Parse(bytes.NewReader(out))
 	if err != nil {
 		return fmt.Errorf("diff output parse failed with error: `%v`", err)
+	}
+	if len(stats) == 0 {
+		return nil
 	}
 
 	// TODO: ignore already added commit
 	// if user run add multiple times without new commit, it should add only one commit to repo
 	repo := gitmirror.NewRepo(statRepoPath)
 
-	if err := repo.AddStats(afero.NewMemMapFs(), stats...); err != nil {
+	if err := repo.AddStats(stats...); err != nil {
 		return err
 	}
 
