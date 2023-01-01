@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
@@ -22,7 +21,9 @@ func NewRepo(path string) Repo {
 // AddStats writes diff stats to related files in mirror repo
 func (r Repo) AddStats(stats ...FileStat) error {
 	now := time.Now()
-	dir := filepath.Join(r.path, strconv.Itoa(now.Year()), strconv.Itoa(int(now.Month())), strconv.Itoa(now.Day()))
+	dayParts := strings.Split(now.Format("2006-01-02"), "-")
+
+	dir := filepath.Join(r.path, dayParts[0], dayParts[1], dayParts[2])
 
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return fmt.Errorf("directory could not created: `%s`. error: %w", dir, err)

@@ -3,7 +3,7 @@ package gitmirror
 import (
 	"os"
 	"path/filepath"
-	"strconv"
+	"strings"
 	"testing"
 	"time"
 )
@@ -44,7 +44,9 @@ func TestRepo_AddChange(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			path := filepath.Join(repoPath, strconv.Itoa(now.Year()), strconv.Itoa(int(now.Month())), strconv.Itoa(now.Day()), tt.fileName)
+			dayParts := strings.Split(now.Format("2006-01-02"), "-")
+			path := filepath.Join(repoPath, dayParts[0], dayParts[1], dayParts[2], tt.fileName)
+
 			err := repo.AddStats(tt.stats...)
 
 			if err != nil {
