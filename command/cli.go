@@ -1,13 +1,11 @@
 package command
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 
-	"github.com/spf13/afero"
 	"github.com/urfave/cli/v2"
 )
 
@@ -20,7 +18,7 @@ func App() *cli.App {
 	return &cli.App{
 		Usage: "git activity mirror",
 		Flags: []cli.Flag{
-			&cli.StringFlag{
+			&cli.PathFlag{
 				Name:  "repo",
 				Value: fmt.Sprintf(filepath.Join(homeDir, ".git-mirror")),
 				Usage: "git repo directory path of the mirror repo",
@@ -32,29 +30,20 @@ func App() *cli.App {
 				EnvVars: []string{"GIT_MIRROR_FILE_TYPE_WHITELIST"},
 			},
 		},
-		Before: func(ctx *cli.Context) error {
-			ctx.Context = context.WithValue(ctx.Context, "fs", afero.NewOsFs())
-			return nil
-		},
 		Commands: []*cli.Command{
 			{
-				Name:            "install",
-				Usage:           "install post-commit hook for adding stats automatically",
-				SkipFlagParsing: true,
-				Action:          InstallHookCmd,
-			},
-			{
-				Name:  "add",
-				Usage: "add stats of latest commit",
+				Name:  "install",
+				Usage: "install post-commit hook for adding stats automatically",
 				Flags: []cli.Flag{
-					&cli.StringFlag{
+					&cli.PathFlag{
 						Name:  "path",
 						Value: ".",
-						Usage: "git repo directory path",
+						Usage: "git repo to install post-commit hook",
 					},
 				},
-				Action: AddCmd,
+				Action: InstallHookCmd,
 			},
+			AddCmd,
 		},
 	}
 }

@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/spf13/afero"
+
+	"gitmirror/git"
 )
 
 type Repo struct {
@@ -55,4 +57,9 @@ func (r Repo) AddStats(fs afero.Fs, stats ...FileStat) error {
 	}
 
 	return nil
+}
+
+// Commit commits changes
+func (r Repo) Commit(msg string) error {
+	return git.AddAndCommit(r.path, msg)
 }

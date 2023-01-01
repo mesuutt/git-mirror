@@ -1,35 +1,28 @@
 package command
 
 import (
-	"context"
-	"io"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
-	"github.com/urfave/cli/v2"
 )
 
 func TestInstallHookCmd(t *testing.T) {
-	fs := afero.NewMemMapFs()
-	ctx := cli.NewContext(&cli.App{Writer: io.Discard}, nil, nil)
+	repoPath, _ := os.MkdirTemp("", "")
+	t.Cleanup(func() { os.RemoveAll(repoPath) })
 
-	ctx.Context = context.WithValue(ctx.Context, "fs", fs)
-
-	hookDir := filepath.Join(".git", "hooks")
+	hookDir := filepath.Join(repoPath, ".git", "hooks")
 	hookFile := filepath.Join(hookDir, "post-commit")
-	_ = fs.MkdirAll(hookDir, os.ModeDir)
+	_ = os.MkdirAll(hookDir, os.ModePerm)
 
 	// when
-	command := cli.Command{Action: InstallHookCmd}
-	err := command.Run(ctx, []string{"install"}...)
+	err := App().Run([]string{"executable-name", "install", "--path=" + repoPath})
 
 	// then
 	assert.Nil(t, err)
-	contains, err := afero.FileContainsBytes(fs, hookFile, []byte("git-mirror add"))
 
+	bytes, err := os.ReadFile(hookFile)
 	assert.Nil(t, err)
-	assert.True(t, contains)
+	assert.Contains(t, string(bytes), "git-mirror add")
 }

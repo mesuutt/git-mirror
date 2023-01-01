@@ -16,7 +16,7 @@ func TestParse(t *testing.T) {
 1       2       b.go
 1       2       Makefile
 `
-	p := NewParser([]string{"go", "txt", "rs", "json", "py", "Makefile"})
+	p := NewParser()
 	result, err := p.Parse(strings.NewReader(input))
 
 	if err != nil {
@@ -70,7 +70,7 @@ func TestParseWithAllowedFileTypes(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 
-			p := NewParser(tt.allowedTypes)
+			p := NewParser().WithWhitelist(tt.allowedTypes)
 			result, err := p.Parse(strings.NewReader(input))
 			if err != nil {
 				t.Fatal(err)

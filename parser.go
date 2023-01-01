@@ -19,18 +19,26 @@ type Parser struct {
 	allowedTypes map[string]struct{}
 }
 
-func NewParser(allowedTypes []string) Parser {
-	if allowedTypes == nil {
-		return Parser{}
+func NewParser() *Parser {
+	return &Parser{}
+}
+
+// WithWhitelist sets allowed file types for creating stats from commit diff
+// if not given, all file types in the commit will be parsed
+func (p *Parser) WithWhitelist(whitelist []string) *Parser {
+	if whitelist == nil {
+		return p
 	}
 
 	// converting to map for find with O(1)
-	types := make(map[string]struct{}, len(allowedTypes))
-	for _, v := range allowedTypes {
-		types[v] = struct{}{}
+	types := make(map[string]struct{}, len(whitelist))
+	for _, v := range whitelist {
+		types[strings.TrimSpace(v)] = struct{}{}
 	}
 
-	return Parser{allowedTypes: types}
+	p.allowedTypes = types
+
+	return p
 }
 
 // Parse parses diff output and create stat for each file type
