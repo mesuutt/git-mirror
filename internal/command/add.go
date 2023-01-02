@@ -1,4 +1,4 @@
-package commands
+package command
 
 import (
 	"bytes"
@@ -7,8 +7,9 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/mesuutt/git-mirror"
-	"github.com/mesuutt/git-mirror/git"
+	"github.com/mesuutt/git-mirror/pkg/git"
+	"github.com/mesuutt/git-mirror/pkg/parser"
+	"github.com/mesuutt/git-mirror/pkg/repo"
 )
 
 var AddCmd = &cli.Command{
@@ -43,7 +44,7 @@ func AddCmdAction(ctx *cli.Context) error {
 		return err
 	}
 
-	parser := gitmirror.NewParser()
+	parser := parser.NewParser()
 
 	if ctx.String("whitelist") != "" {
 		parser = parser.WithWhitelist(strings.Split(ctx.String("whitelist"), ","))
@@ -59,7 +60,7 @@ func AddCmdAction(ctx *cli.Context) error {
 
 	// TODO: ignore already added commit
 	// if user run add multiple times without new commit, it should add only one commit to repo
-	repo := gitmirror.NewRepo(statRepoPath)
+	repo := repo.NewRepo(statRepoPath)
 
 	if err := repo.AddStats(stats...); err != nil {
 		return err

@@ -1,4 +1,4 @@
-package gitmirror
+package parser
 
 import (
 	"strings"

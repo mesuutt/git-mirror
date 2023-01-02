@@ -20,7 +20,7 @@ GLOBAL OPTIONS:
 ```
 
 #### Install
-- Grab a [binary](https://github.com/mesuutt/git-mirror/releases) or install via `go install github.com/mesuutt/git-mirror/cmd@latest`
+- Grab a [binary](https://github.com/mesuutt/git-mirror/releases) or install via `go install github.com/mesuutt/git-mirror@latest`
 - Create a git repository at `~/.git-mirror`(Do not forget `git init`)
 
 #### Usage

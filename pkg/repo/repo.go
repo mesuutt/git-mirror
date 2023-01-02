@@ -1,4 +1,4 @@
-package gitmirror
+package repo
 
 import (
 	"fmt"
@@ -7,7 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mesuutt/git-mirror/git"
+	"github.com/mesuutt/git-mirror/pkg/git"
+	"github.com/mesuutt/git-mirror/pkg/parser"
 )
 
 type Repo struct {
@@ -19,7 +20,7 @@ func NewRepo(path string) Repo {
 }
 
 // AddStats writes diff stats to related files in mirror repo
-func (r Repo) AddStats(stats ...FileStat) error {
+func (r Repo) AddStats(stats ...parser.FileStat) error {
 	dayParts := strings.Split(time.Now().Format("2006-01-02"), "-")
 
 	dir := filepath.Join(r.path, dayParts[0], dayParts[1], dayParts[2])
