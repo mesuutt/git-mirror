@@ -54,10 +54,15 @@ func (p *Parser) Parse(r io.Reader) ([]FileStat, error) {
 
 		parts := strings.Fields(line)
 		ext := filepath.Ext(parts[len(parts)-1])
-		addCount, err := strconv.Atoi(parts[0])
-		delCount, err := strconv.Atoi(parts[1])
-		if err != nil {
-			return nil, fmt.Errorf("stat parse failed: `%s`", line)
+		var addCount, delCount int
+		var err error
+
+		if addCount, err = strconv.Atoi(parts[0]); err != nil {
+			return nil, fmt.Errorf("add count parse failed: `%s`", line)
+		}
+
+		if delCount, err = strconv.Atoi(parts[1]); err != nil {
+			return nil, fmt.Errorf("delete count parse failed: `%s`", line)
 		}
 
 		if ext == "" {
