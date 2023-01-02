@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"git-mirror/commands"
+	"gitmirror/commands"
 )
 
 func main() {

@@ -7,8 +7,8 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"git-mirror"
-	"git-mirror/git"
+	"gitmirror"
+	"gitmirror/git"
 )
 
 var AddCmd = &cli.Command{
