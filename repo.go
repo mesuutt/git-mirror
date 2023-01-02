@@ -20,8 +20,7 @@ func NewRepo(path string) Repo {
 
 // AddStats writes diff stats to related files in mirror repo
 func (r Repo) AddStats(stats ...FileStat) error {
-	now := time.Now()
-	dayParts := strings.Split(now.Format("2006-01-02"), "-")
+	dayParts := strings.Split(time.Now().Format("2006-01-02"), "-")
 
 	dir := filepath.Join(r.path, dayParts[0], dayParts[1], dayParts[2])
 
