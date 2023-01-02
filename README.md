@@ -28,4 +28,28 @@ You need to push the new commit of mirror repository to see contributions on you
 
 ----
 
+```shell
+# Example generated mirror repo content
+$ tree
+.
+└── 2023
+    └── 01
+        ├── 01
+        │ └── log.go
+        └── 02
+            ├── log.go
+            ├── log.java
+            ├── log.md
+            ├── log.sql
+            └── log.yaml
+
+# Example file content
+$ cat 2023/01/02/log.java
+7 insertion(s), 2 deletion(s)
+59 insertion(s), 6 deletion(s)
+9 insertion(s), 1 deletion(s)
+9 insertion(s), 1 deletion(s)
+```
+----
+
 License: MIT
