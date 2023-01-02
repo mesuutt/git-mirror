@@ -50,6 +50,18 @@ $ cat 2023/01/02/log.java
 9 insertion(s), 1 deletion(s)
 9 insertion(s), 1 deletion(s)
 ```
+
+
+#### TODO
+
+- [ ] File stat aliases: `yaml=yml,java=gradle,xml,properties`
+- [ ] commit, filename templates with config
+```shell
+-vars="company=mycorp,project=api-gateway"
+filename_format="{company}.{ext}"
+log_format="{company}->{project} {insert_count} insertion(s), {delete_count} deletion(s)"
+```
+
 ----
 
 License: MIT
