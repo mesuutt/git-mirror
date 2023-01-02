@@ -1,4 +1,4 @@
-module gitmirror
+module git-mirror
 
 go 1.19
 

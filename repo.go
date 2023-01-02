@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"gitmirror/git"
+	"git-mirror/git"
 )
 
 type Repo struct {
