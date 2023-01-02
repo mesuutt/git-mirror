@@ -1,4 +1,4 @@
-Create git activities from commits by commits.
+Create git activities from commits.
 
 #### Usage
 
@@ -20,7 +20,7 @@ GLOBAL OPTIONS:
 #### Install
 - Install `git-miror` by `go install github.com/mesuutt/git-mirror`
 - Create a git repository at `~/.git-mirror`
-- Go to project directory and add git hook by `git-mirror install`
+- Go to project directory and add git post-commit hook by `git-mirror install`
 
 After that when you add a new commit to your project, stats of the commit will be added to the mirror repository.
 
@@ -54,6 +54,7 @@ $ cat 2023/01/02/log.java
 
 #### TODO
 
+- [ ] Write better readme
 - [ ] File stat aliases: `yaml=yml,java=gradle,xml,properties`
 - [ ] commit, filename templates with config
 ```shell
@@ -61,8 +62,8 @@ $ cat 2023/01/02/log.java
 filename_format="{company}.{ext}"
 log_format="{company}->{project}: {insert_count} insertion(s), {delete_count} deletion(s)"
 ```
-- [ ] Create os packages (homebrew/apt etc)
-
+- [ ] Funny commit messages
+- [ ] Create os packages for homebrew,apt etc.
 ----
 
 License: MIT
