@@ -1,4 +1,6 @@
-Create git activities from commits.
+Create git activities from your commits.
+
+---
 
 #### Usage
 
@@ -18,18 +20,17 @@ GLOBAL OPTIONS:
 ```
 
 #### Install
-- Install `git-miror` by `go install github.com/mesuutt/git-mirror`
+- Grab a binary from [releases](https://github.com/mesuutt/git-mirror/releases) or install by `go install github.com/mesuutt/git-mirror@latest`
 - Create a git repository at `~/.git-mirror`
-- Go to project directory and add git post-commit hook by `git-mirror install`
+- Go to project directory and add post-commit hook by `git-mirror install`
 
-After that when you add a new commit to your project, stats of the commit will be added to the mirror repository.
-
-You need to push the new commit of mirror repository to see contributions on your Github profile.
+When you add a new commit to your project, stats of the commit will be added to the mirror repository.
+You need to push the new commit of mirror repository in order to see contributions at your GitHub profile and contribution chart.
 
 ----
 
+#### Example generated mirror repo content
 ```shell
-# Example generated mirror repo content
 $ tree
 .
 └── 2023
@@ -43,14 +44,12 @@ $ tree
             ├── log.sql
             └── log.yaml
 
-# Example file content
+# Example generated file content after some commits
 $ cat 2023/01/02/log.java
 7 insertion(s), 2 deletion(s)
 59 insertion(s), 6 deletion(s)
 9 insertion(s), 1 deletion(s)
-9 insertion(s), 1 deletion(s)
 ```
-
 
 #### TODO
 
