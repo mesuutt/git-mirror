@@ -13,7 +13,7 @@ COMMANDS:
 
 GLOBAL OPTIONS:
    --repo value       git repo directory path of the mirror repo (default: "$HOME/.git-mirror")
-   --whitelist value  comma seperated file extensions to create stats. eg: go,rs,sh,Makefile
+   --whitelist value  comma seperated file extensions to create stats. eg: go,rs,sh,Makefile (default: all extensions)
    --help, -h         show help (default: false)
 ```
 
