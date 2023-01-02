@@ -20,9 +20,15 @@ GLOBAL OPTIONS:
 ```
 
 #### Install
-- Grab a binary from [releases](https://github.com/mesuutt/git-mirror/releases) or install by `go install github.com/mesuutt/git-mirror@latest`
-- Create a git repository at `~/.git-mirror`
-- Go to project directory and add post-commit hook by `git-mirror install`
+- Clone repo
+- Build with `go build -o git-mirror cmd/main.go`
+- Add executable to your $PATH
+- Create a git repository at `~/.git-mirror`(Do not forget `git init`)
+
+#### Usage
+
+git-mirror works as git post-commit hook. 
+So after install it you need to add related hook to project repositories by `git-mirror install` in your repos.  
 
 When you add a new commit to your project, stats of the commit will be added to the mirror repository.
 You need to push the new commit of mirror repository in order to see contributions at your GitHub profile and contribution chart.
@@ -63,6 +69,7 @@ log_format="{company}->{project}: {insert_count} insertion(s), {delete_count} de
 ```
 - [ ] Funny commit messages
 - [ ] Create os packages for homebrew,apt etc.
+- [ ] Make installable by `go install`
 ----
 
 License: MIT
