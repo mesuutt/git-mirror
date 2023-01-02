@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"gitmirror/commands"
+	"github.com/mesuutt/git-mirror/commands"
 )
 
 func main() {

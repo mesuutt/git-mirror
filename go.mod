@@ -1,4 +1,4 @@
-module gitmirror
+module github.com/mesuutt/git-mirror
 
 go 1.19
 
