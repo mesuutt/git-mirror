@@ -59,8 +59,9 @@ $ cat 2023/01/02/log.java
 ```shell
 -vars="company=mycorp,project=api-gateway"
 filename_format="{company}.{ext}"
-log_format="{company}->{project} {insert_count} insertion(s), {delete_count} deletion(s)"
+log_format="{company}->{project}: {insert_count} insertion(s), {delete_count} deletion(s)"
 ```
+- [ ] Create os packages (homebrew/apt etc)
 
 ----
 
