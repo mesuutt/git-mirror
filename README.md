@@ -20,9 +20,7 @@ GLOBAL OPTIONS:
 ```
 
 #### Install
-- Clone repo
-- Build with `go build -o git-mirror cmd/main.go`
-- Add executable to your $PATH
+- Grab a [binary](https://github.com/mesuutt/git-mirror/releases) or install via `go install github.com/mesuutt/git-mirror@latest`
 - Create a git repository at `~/.git-mirror`(Do not forget `git init`)
 
 #### Usage
