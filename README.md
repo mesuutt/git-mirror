@@ -67,7 +67,6 @@ log_format="{company}->{project}: {insert_count} insertion(s), {delete_count} de
 ```
 - [ ] Funny commit messages
 - [ ] Create os packages for homebrew,apt etc.
-- [ ] Make installable by `go install`
 ----
 
 License: MIT
