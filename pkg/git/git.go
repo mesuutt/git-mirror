@@ -47,18 +47,12 @@ func LastCommitStatsDiff(repoPath string) ([]byte, error) {
 	return out, nil
 }
 
-func CreateHookDir(path string) error {
-	hookDir := filepath.Join(path, ".git", "hooks")
-	if _, err := os.Stat(hookDir); os.IsNotExist(err) {
-		if err := os.MkdirAll(hookDir, os.ModeDir); err != nil {
-			return fmt.Errorf(hookDir+" directory creation failed: %v", err)
-		}
+// AddHook adds given content to the given hook file
+func AddHook(path string, hook, content string) error {
+	if err := createHookDir(path); err != nil {
+		return err
 	}
 
-	return nil
-}
-
-func AddHook(path string, hook, content string) error {
 	// TODO: prevent duplicate hook
 	// TODO: in test check file is executable
 	hookFilePath := filepath.Join(path, ".git", "hooks", hook)
@@ -71,6 +65,17 @@ func AddHook(path string, hook, content string) error {
 
 	if _, err := f.WriteString("\n" + content + "\n"); err != nil {
 		return fmt.Errorf("hook add failed to %s file. error: %v", hook, err)
+	}
+
+	return nil
+}
+
+func createHookDir(path string) error {
+	hookDir := filepath.Join(path, ".git", "hooks")
+	if _, err := os.Stat(hookDir); os.IsNotExist(err) {
+		if err := os.MkdirAll(hookDir, os.ModeDir); err != nil {
+			return fmt.Errorf(hookDir+" directory creation failed: %v", err)
+		}
 	}
 
 	return nil

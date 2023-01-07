@@ -24,11 +24,8 @@ var InstallCmd = &cli.Command{
 // InstallHookCmd add git hook to .git/hooks/post-commit file
 func InstallHookCmd(c *cli.Context) error {
 	path := c.Path("path")
-	if err := git.ValidateRepo(path); err != nil {
-		return err
-	}
 
-	if err := git.CreateHookDir(path); err != nil {
+	if err := git.ValidateRepo(path); err != nil {
 		return err
 	}
 
