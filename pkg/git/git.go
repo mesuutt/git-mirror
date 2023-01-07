@@ -21,13 +21,16 @@ func ValidateRepo(path string) error {
 	return nil
 }
 
-func AddAndCommit(repoPath, msg string) error {
+func AddChanges(repoPath string) error {
 	_, err := exec.Command("git", "-C", repoPath, "add", ".").Output()
 	if err != nil {
 		return fmt.Errorf("`git -C %s add .` command execution failed. error %v", repoPath, err)
 	}
+	return nil
+}
 
-	_, err = exec.Command("git", "-C", repoPath, "commit", "-m", msg).Output()
+func Commit(repoPath, msg string) error {
+	_, err := exec.Command("git", "-C", repoPath, "commit", "-m", msg).Output()
 	if err != nil {
 		return fmt.Errorf("`git -C %s commit -m '%s'` command execution failed. error %v", repoPath, msg, err)
 	}
@@ -42,4 +45,33 @@ func LastCommitStatsDiff(repoPath string) ([]byte, error) {
 	}
 
 	return out, nil
+}
+
+func CreateHookDir(path string) error {
+	hookDir := filepath.Join(path, ".git", "hooks")
+	if _, err := os.Stat(hookDir); os.IsNotExist(err) {
+		if err := os.MkdirAll(hookDir, os.ModeDir); err != nil {
+			return fmt.Errorf(hookDir+" directory creation failed: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func AddHook(path string, hook, content string) error {
+	// TODO: prevent duplicate hook
+	// TODO: in test check file is executable
+	hookFilePath := filepath.Join(path, ".git", "hooks", hook)
+	f, err := os.OpenFile(hookFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		return fmt.Errorf(hookFilePath+" file could not open for adding hook: %v", err)
+	}
+
+	defer f.Close()
+
+	if _, err := f.WriteString("\n" + content + "\n"); err != nil {
+		return fmt.Errorf("hook add failed to post-commit file. error: %v", err)
+	}
+
+	return nil
 }

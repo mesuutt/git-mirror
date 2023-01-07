@@ -66,7 +66,7 @@ func AddCmdAction(ctx *cli.Context) error {
 		return err
 	}
 
-	if err := repo.Commit("update"); err != nil {
+	if err := repo.AddAndCommit("update"); err != nil {
 		return err
 	}
 

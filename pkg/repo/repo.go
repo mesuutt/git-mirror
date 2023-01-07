@@ -58,7 +58,11 @@ func (r Repo) AddStats(stats ...parser.FileStat) error {
 	return nil
 }
 
-// Commit commits changes
-func (r Repo) Commit(msg string) error {
-	return git.AddAndCommit(r.path, msg)
+// AddAndCommit commits changes
+func (r Repo) AddAndCommit(msg string) error {
+	if err := git.AddChanges(r.path); err != nil {
+		return err
+	}
+
+	return git.Commit(r.path, msg)
 }
