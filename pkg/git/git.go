@@ -64,13 +64,13 @@ func AddHook(path string, hook, content string) error {
 	hookFilePath := filepath.Join(path, ".git", "hooks", hook)
 	f, err := os.OpenFile(hookFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf(hookFilePath+" file could not open for adding hook: %v", err)
+		return fmt.Errorf("%s file could not open for adding hook: %v", hookFilePath, err)
 	}
 
 	defer f.Close()
 
 	if _, err := f.WriteString("\n" + content + "\n"); err != nil {
-		return fmt.Errorf("hook add failed to post-commit file. error: %v", err)
+		return fmt.Errorf("hook add failed to %s file. error: %v", hook, err)
 	}
 
 	return nil
