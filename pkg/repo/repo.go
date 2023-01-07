@@ -58,7 +58,7 @@ func (r Repo) AddStats(stats ...parser.FileStat) error {
 	return nil
 }
 
-// AddAndCommit commits changes
+// AddAndCommit add latest generated stats to git and commit
 func (r Repo) AddAndCommit(msg string) error {
 	if err := git.AddChanges(r.path); err != nil {
 		return err
