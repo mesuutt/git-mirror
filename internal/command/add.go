@@ -3,12 +3,13 @@ package command
 import (
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/urfave/cli/v2"
 
+	"github.com/mesuutt/git-mirror/pkg/commit"
 	"github.com/mesuutt/git-mirror/pkg/git"
-	"github.com/mesuutt/git-mirror/pkg/parser"
 	"github.com/mesuutt/git-mirror/pkg/repo"
 )
 
@@ -44,7 +45,7 @@ func AddCmdAction(ctx *cli.Context) error {
 		return err
 	}
 
-	parser := parser.NewParser()
+	parser := commit.NewParser()
 
 	if ctx.String("whitelist") != "" {
 		parser = parser.WithWhitelist(strings.Split(ctx.String("whitelist"), ","))
@@ -58,9 +59,11 @@ func AddCmdAction(ctx *cli.Context) error {
 		return nil
 	}
 
+	commitGen := commit.NewGenerator(filepath.Join(statRepoPath, "config.toml"))
+
 	// TODO: ignore already added commit
 	// if user run add multiple times without new commit, it should add only one commit to repo
-	repo := repo.NewRepo(statRepoPath)
+	repo := repo.NewRepo(statRepoPath, commitGen)
 
 	if err := repo.AddStats(stats...); err != nil {
 		return err

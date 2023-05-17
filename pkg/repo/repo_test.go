@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mesuutt/git-mirror/pkg/parser"
+	"github.com/mesuutt/git-mirror/pkg/commit"
 )
 
 func TestRepo_AddChange(t *testing.T) {
@@ -19,25 +19,25 @@ func TestRepo_AddChange(t *testing.T) {
 	now := time.Now()
 	tests := []struct {
 		name     string
-		stats    []parser.FileStat
+		stats    []commit.FileStat
 		fileName string
 		content  string
 	}{
 		{
 			name:     "one commit",
-			stats:    []parser.FileStat{{Insert: 1, Delete: 2, Ext: ".go"}},
+			stats:    []commit.FileStat{{Insert: 1, Delete: 2, Ext: ".go"}},
 			fileName: "log.go",
 			content:  "1 insertion(s), 2 deletion(s)\n",
 		},
 		{
 			name:     "same file type, two commit",
-			stats:    []parser.FileStat{{Insert: 1, Delete: 2, Ext: ".rs"}, {Insert: 2, Delete: 2, Ext: ".rs"}},
+			stats:    []commit.FileStat{{Insert: 1, Delete: 2, Ext: ".rs"}, {Insert: 2, Delete: 2, Ext: ".rs"}},
 			fileName: "log.rs",
 			content:  "1 insertion(s), 2 deletion(s)\n2 insertion(s), 2 deletion(s)\n",
 		},
 		{
 			name:     "file without extension",
-			stats:    []parser.FileStat{{Insert: 1, Delete: 2, Ext: "Makefile"}},
+			stats:    []commit.FileStat{{Insert: 1, Delete: 2, Ext: "Makefile"}},
 			fileName: "Makefile",
 			content:  "1 insertion(s), 2 deletion(s)\n",
 		},

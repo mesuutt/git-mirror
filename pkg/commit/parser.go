@@ -1,4 +1,4 @@
-package parser
+package commit
 
 import (
 	"bufio"

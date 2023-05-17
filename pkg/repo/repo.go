@@ -7,20 +7,21 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mesuutt/git-mirror/pkg/commit"
 	"github.com/mesuutt/git-mirror/pkg/git"
-	"github.com/mesuutt/git-mirror/pkg/parser"
 )
 
 type Repo struct {
-	path string
+	path      string
+	commitGen commit.Generator
 }
 
-func NewRepo(path string) Repo {
-	return Repo{path: path}
+func NewRepo(path string, commitGen commit.Generator) Repo {
+	return Repo{path: path, commitGen: commitGen}
 }
 
 // AddStats writes diff stats to related files in mirror repo
-func (r Repo) AddStats(stats ...parser.FileStat) error {
+func (r Repo) AddStats(stats ...commit.FileStat) error {
 	dayParts := strings.Split(time.Now().Format("2006-01-02"), "-")
 
 	dir := filepath.Join(r.path, dayParts[0], dayParts[1], dayParts[2])
@@ -31,21 +32,16 @@ func (r Repo) AddStats(stats ...parser.FileStat) error {
 
 	for i := range stats {
 		stat := &stats[i]
-		filename := fmt.Sprintf("log%s", stat.Ext)
 
-		// handle files without extension. eg: Makefile
-		if !strings.HasPrefix(stat.Ext, ".") {
-			filename = stat.Ext
-		}
-
-		filePath := filepath.Join(dir, filename)
+		commit := r.commitGen.GenCommit(stat)
+		filePath := filepath.Join(dir, commit.Filename)
 
 		f, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			return fmt.Errorf("file could not be opened for appending changes: `%s`. error: %w", filePath, err)
 		}
 
-		_, err = f.WriteString(fmt.Sprintf("%d insertion(s), %d deletion(s)\n", stat.Insert, stat.Delete))
+		_, err = f.WriteString(commit.Message + "\n")
 		if err != nil {
 			return fmt.Errorf("changes could not write to file: `%s`. error: %w", filePath, err)
 		}
