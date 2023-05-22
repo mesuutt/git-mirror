@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/mesuutt/git-mirror/pkg/config"
 )
@@ -57,10 +58,25 @@ func (f Generator) buildMessage(stat *FileStat) (string, error) {
 
 	var commitMessage bytes.Buffer
 	fileExt := f.removeDot(stat.Ext)
+	now := time.Now()
+
+	commonVars := struct {
+		HM     string
+		Hour   string
+		Minute string
+	}{
+		HM:     now.Format("15:04"),
+		Hour:   now.Format("15"),
+		Minute: now.Format("04"),
+	}
+
 	commitTemplateVarMap := map[string]interface{}{
 		"InsertCount": stat.Insert,
 		"DeleteCount": stat.Delete,
 		"Ext":         fileExt,
+		"HM":          commonVars.HM,
+		"Hour":        commonVars.Hour,
+		"Minute":      commonVars.Minute,
 	}
 
 	if err := commitTempl.Execute(&commitMessage, commitTemplateVarMap); err != nil {
@@ -76,6 +92,9 @@ func (f Generator) buildMessage(stat *FileStat) (string, error) {
 		var buf bytes.Buffer
 		varMap := map[string]interface{}{
 			"Message": commitMessage.String(),
+			"HM":      commonVars.HM,
+			"Hour":    commonVars.Hour,
+			"Minute":  commonVars.Minute,
 		}
 
 		if err := wrapperTempl.Execute(&buf, varMap); err != nil {
