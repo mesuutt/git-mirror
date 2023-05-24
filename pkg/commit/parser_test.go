@@ -16,6 +16,7 @@ func TestParse(t *testing.T) {
 1       2       b.go
 1       2       Makefile
 0       0       a.go => b.go
+2       3       pkg/{c.go => d.go}
 `
 	p := NewParser()
 	result, err := p.Parse(strings.NewReader(input))
@@ -25,7 +26,7 @@ func TestParse(t *testing.T) {
 	}
 
 	expected := map[string][]int{
-		".go":      {2, 4},
+		".go":      {4, 7},
 		".rs":      {2, 3},
 		".txt":     {1, 0},
 		".json":    {19, 6},

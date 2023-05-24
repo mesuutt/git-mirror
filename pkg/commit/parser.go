@@ -64,6 +64,9 @@ func (p *Parser) Parse(r io.Reader) ([]FileStat, error) {
 			continue
 		}
 
+		// remove } if file in inner dir renamed
+		ext = strings.TrimSuffix(ext, "}")
+
 		if ext == "" {
 			// If file does not have an extension
 			// search in allowed types and use filename
