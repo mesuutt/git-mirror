@@ -15,6 +15,7 @@ func TestParse(t *testing.T) {
 10      2       app.py
 1       2       b.go
 1       2       Makefile
+0       0       a.go => b.go
 `
 	p := NewParser()
 	result, err := p.Parse(strings.NewReader(input))

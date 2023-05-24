@@ -65,6 +65,11 @@ func (p *Parser) Parse(r io.Reader) ([]FileStat, error) {
 			return nil, fmt.Errorf("delete count parse failed: `%s`", line)
 		}
 
+		// skip file renames
+		if addCount == 0 && delCount == 0 {
+			continue
+		}
+
 		if ext == "" {
 			// If file does not have an extension
 			// search in allowed types and use filename
