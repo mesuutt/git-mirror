@@ -26,7 +26,7 @@ func NewGenerator(configPath string) Generator {
 }
 
 func (f Generator) GenCommit(stat *FileStat) Commit {
-	ext := f.findRealExtention(stat)
+	ext := f.findRealExtension(stat)
 	filename := fmt.Sprintf("log.%s", ext)
 
 	// handle files without extension. eg: Makefile, Dockerfile etc
@@ -107,7 +107,7 @@ func (f Generator) buildMessage(stat *FileStat) (string, error) {
 	return fmt.Sprintf(defaultCommitFormat, stat.Insert, stat.Delete), nil
 }
 
-func (f Generator) findRealExtention(stat *FileStat) string {
+func (f Generator) findRealExtension(stat *FileStat) string {
 	searchExt := f.removeDot(stat.Ext)
 
 	for typ, aliases := range f.conf.Aliases {
