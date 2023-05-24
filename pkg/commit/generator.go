@@ -26,7 +26,7 @@ func NewGenerator(configPath string) Generator {
 }
 
 func (f Generator) GenCommit(stat *FileStat) Commit {
-	ext := f.findRealExtension(stat)
+	ext := f.findExtensionAlias(stat.Ext)
 	filename := fmt.Sprintf("log.%s", ext)
 
 	// handle files without extension. eg: Makefile, Dockerfile etc
@@ -34,7 +34,7 @@ func (f Generator) GenCommit(stat *FileStat) Commit {
 		filename = stat.Ext
 	}
 
-	msg, err := f.buildMessage(stat)
+	msg, err := f.buildMessage(stat, ext)
 	if err != nil {
 		panic("TODO")
 	}
@@ -45,7 +45,7 @@ func (f Generator) GenCommit(stat *FileStat) Commit {
 	}
 }
 
-func (f Generator) buildMessage(stat *FileStat) (string, error) {
+func (f Generator) buildMessage(stat *FileStat, ext string) (string, error) {
 	if f.conf == nil {
 		return fmt.Sprintf(defaultCommitFormat, stat.Insert, stat.Delete), nil
 	}
@@ -57,7 +57,7 @@ func (f Generator) buildMessage(stat *FileStat) (string, error) {
 	}
 
 	var commitMessage bytes.Buffer
-	fileExt := f.removeDot(stat.Ext)
+	fileExt := f.removeDot(ext)
 	now := time.Now()
 
 	commonVars := struct {
@@ -107,8 +107,12 @@ func (f Generator) buildMessage(stat *FileStat) (string, error) {
 	return fmt.Sprintf(defaultCommitFormat, stat.Insert, stat.Delete), nil
 }
 
-func (f Generator) findRealExtension(stat *FileStat) string {
-	searchExt := f.removeDot(stat.Ext)
+func (f Generator) findExtensionAlias(ext string) string {
+	if f.conf == nil {
+		return ext
+	}
+
+	searchExt := f.removeDot(ext)
 
 	for typ, aliases := range f.conf.Aliases {
 		if typ != "default" {
