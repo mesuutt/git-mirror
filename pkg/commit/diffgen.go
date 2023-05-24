@@ -3,6 +3,7 @@ package commit
 import (
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"strings"
 	"text/template"
 	"time"
@@ -16,7 +17,7 @@ type Generator struct {
 	conf *config.Config
 }
 
-func NewGenerator(configPath string) Generator {
+func NewDiffGenerator(configPath string) Generator {
 	conf, err := config.ReadConfig(configPath)
 	if err != nil {
 		return Generator{conf: nil}
@@ -25,24 +26,34 @@ func NewGenerator(configPath string) Generator {
 	return Generator{conf: conf}
 }
 
-func (f Generator) GenCommit(stat *FileStat) Commit {
-	ext := f.findExtensionAlias(stat.Ext)
-	filename := fmt.Sprintf("log.%s", ext)
+func (f Generator) GenDiff(stats []FileStat) Diff {
+	var diff Diff
+	dayParts := strings.Split(time.Now().Format("2006-01-02"), "-")
+	for _, stat := range stats {
+		ext := f.findExtensionAlias(stat.Ext)
+		filename := fmt.Sprintf("log.%s", ext)
 
-	// handle files without extension. eg: Makefile, Dockerfile etc
-	if !strings.HasPrefix(stat.Ext, ".") {
-		filename = stat.Ext
+		// handle files without extension. eg: Makefile, Dockerfile etc
+		if !strings.HasPrefix(stat.Ext, ".") {
+			filename = stat.Ext
+		}
+
+		msg, err := f.buildMessage(&stat, ext)
+		if err != nil {
+			panic("TODO")
+		}
+
+		diff.Changes = append(diff.Changes, Change{
+			Dir:       filepath.Join(dayParts[0], dayParts[1], dayParts[2]),
+			Filename:  filename,
+			Text:      msg,
+			Insertion: stat.Insert,
+			Deletion:  stat.Delete,
+		})
+
 	}
 
-	msg, err := f.buildMessage(stat, ext)
-	if err != nil {
-		panic("TODO")
-	}
-
-	return Commit{
-		Filename: filename,
-		Message:  msg,
-	}
+	return diff
 }
 
 func (f Generator) buildMessage(stat *FileStat, ext string) (string, error) {

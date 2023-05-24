@@ -22,6 +22,11 @@ var AddCmd = &cli.Command{
 			Value: ".",
 			Usage: "git repo directory path",
 		},
+		&cli.BoolFlag{
+			Name:  "dry-run",
+			Value: false,
+			Usage: "print changes to stdout instead create commit",
+		},
 	},
 	Action: AddCmdAction,
 }
@@ -31,6 +36,7 @@ func AddCmdAction(ctx *cli.Context) error {
 	// TODO: ignore merge commits
 	statRepoPath := ctx.String("repo")
 	runPath := ctx.String("path")
+	dryRun := ctx.Bool("dry-run")
 
 	if err := git.ValidateRepo(runPath); err != nil {
 		return err
@@ -59,17 +65,22 @@ func AddCmdAction(ctx *cli.Context) error {
 		return nil
 	}
 
-	commitGen := commit.NewGenerator(filepath.Join(statRepoPath, "config.toml"))
+	commitGen := commit.NewDiffGenerator(filepath.Join(statRepoPath, "config.toml"))
+
+	var repoImpl repo.Repo
+	if dryRun {
+		repoImpl = repo.NewFakeRepo()
+	} else {
+		repoImpl = repo.NewFsRepo(statRepoPath)
+	}
 
 	// TODO: ignore already added commit
 	// if user run add multiple times without new commit, it should add only one commit to repo
-	repo := repo.NewRepo(statRepoPath, commitGen)
-
-	if err := repo.AddStats(stats...); err != nil {
+	if err := repoImpl.AddStats(commitGen.GenDiff(stats)); err != nil {
 		return err
 	}
 
-	if err := repo.AddAndCommit("update"); err != nil {
+	if err := repoImpl.AddAndCommit("update"); err != nil {
 		return err
 	}
 

@@ -9,12 +9,6 @@ import (
 	"strings"
 )
 
-type FileStat struct {
-	Insert int
-	Delete int
-	Ext    string
-}
-
 type Parser struct {
 	allowedTypes map[string]struct{}
 }
