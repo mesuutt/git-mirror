@@ -41,7 +41,9 @@ func (r fsRepo) AddStats(diff commit.Diff) error {
 			return fmt.Errorf("changes could not write to file: `%s`. error: %w", filePath, err)
 		}
 
-		return f.Close()
+		if err := f.Close(); err != nil {
+			return err
+		}
 	}
 
 	return nil
