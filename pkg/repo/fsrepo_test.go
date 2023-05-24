@@ -14,9 +14,9 @@ func TestRepo_AddChange(t *testing.T) {
 	repoPath, _ := os.MkdirTemp("", "")
 	t.Cleanup(func() { os.RemoveAll(repoPath) })
 
-	commitGen := commit.NewDiffGenerator(filepath.Join(repoPath, "config.toml"))
+	// commitGen := commit.NewDiffGenerator(filepath.Join(repoPath, "config.toml"))
 
-	repo := NewFsRepo(repoPath, commitGen)
+	repo := NewFsRepo(repoPath)
 
 	now := time.Now()
 	tests := []struct {
