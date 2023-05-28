@@ -13,20 +13,20 @@ import (
 
 const defaultCommitFormat = "%d insertion(s), %d deletion(s)"
 
-type Generator struct {
+type diffGen struct {
 	conf *config.Config
 }
 
-func NewDiffGenerator(configPath string) Generator {
+func NewDiffGenerator(configPath string) diffGen {
 	conf, err := config.ReadConfig(configPath)
 	if err != nil {
-		return Generator{conf: nil}
+		return diffGen{conf: nil}
 	}
 
-	return Generator{conf: conf}
+	return diffGen{conf: conf}
 }
 
-func (f Generator) GenDiff(stats []FileStat) Diff {
+func (f diffGen) GenDiff(stats []FileStat) Diff {
 	var diff Diff
 	dayParts := strings.Split(time.Now().Format("2006-01-02"), "-")
 	for _, stat := range stats {
@@ -50,13 +50,12 @@ func (f Generator) GenDiff(stats []FileStat) Diff {
 			Insertion: stat.Insert,
 			Deletion:  stat.Delete,
 		})
-
 	}
 
 	return diff
 }
 
-func (f Generator) buildMessage(stat *FileStat, ext string) (string, error) {
+func (f diffGen) buildMessage(stat *FileStat, ext string) (string, error) {
 	if f.conf == nil {
 		return fmt.Sprintf(defaultCommitFormat, stat.Insert, stat.Delete), nil
 	}
@@ -69,7 +68,7 @@ func (f Generator) buildMessage(stat *FileStat, ext string) (string, error) {
 
 	var commitMessage bytes.Buffer
 	fileExt := f.removeDot(ext)
-	now := time.Now()
+	now := time.Now() // TODO: get commit time instead now(usable especially with --dry-run)
 
 	commonVars := struct {
 		HM     string
@@ -118,7 +117,7 @@ func (f Generator) buildMessage(stat *FileStat, ext string) (string, error) {
 	return fmt.Sprintf(defaultCommitFormat, stat.Insert, stat.Delete), nil
 }
 
-func (f Generator) findExtensionAlias(ext string) string {
+func (f diffGen) findExtensionAlias(ext string) string {
 	if f.conf == nil {
 		return ext
 	}
@@ -146,7 +145,7 @@ func (f Generator) findExtensionAlias(ext string) string {
 	return searchExt
 }
 
-func (f Generator) removeDot(ext string) string {
+func (f diffGen) removeDot(ext string) string {
 	if strings.HasPrefix(ext, ".") {
 		return strings.Replace(ext, ".", "", 1)
 	}
