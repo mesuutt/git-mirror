@@ -61,9 +61,8 @@ $ cat 2023/01/02/log.java
 - [ ] File stat aliases: `yaml=yml,java=gradle,xml,properties`
 - [ ] commit, filename templates with config
 ```shell
--vars="company=mycorp,project=api-gateway"
-filename_format="{company}.{ext}"
-log_format="{company}->{project}: {insert_count} insertion(s), {delete_count} deletion(s)"
+-vars="project=foo-api-gateway"
+log_format="{project}: {insert_count} insertion(s), {delete_count} deletion(s)"
 ```
 - [ ] Funny commit messages
 - [ ] Create os packages for homebrew,apt etc.

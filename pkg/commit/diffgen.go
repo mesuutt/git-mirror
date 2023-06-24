@@ -11,8 +11,6 @@ import (
 	"github.com/mesuutt/git-mirror/pkg/config"
 )
 
-const defaultLogMsgFormat = "%d insertion(s), %d deletion(s)"
-
 type diffGen struct {
 	conf *config.Config
 }
@@ -22,18 +20,40 @@ func NewDiffGenerator(conf *config.Config) diffGen {
 }
 
 func (f diffGen) GenDiff(stats []FileStat, commitInfo CommitInfo) (*Diff, error) {
+	mergedFileStats := make(map[string]FileStat)
+	for _, stat := range stats {
+		fileType := f.decideNewExtension(f.clearDot(stat.Ext))
+		if _, ok := mergedFileStats[fileType]; ok {
+			mergedFileStats[fileType] = FileStat{
+				Insert: mergedFileStats[fileType].Insert + stat.Insert,
+				Delete: mergedFileStats[fileType].Delete + stat.Delete,
+				Ext:    stat.Ext,
+			}
+		} else {
+			mergedFileStats[fileType] = FileStat{
+				Insert: stat.Insert,
+				Delete: stat.Delete,
+				Ext:    stat.Ext,
+			}
+		}
+	}
+
 	var diff Diff
 	dayParts := strings.Split(time.Now().Format("2006-01-02"), "-")
-	for _, stat := range stats {
-		fileExt := f.decideFileExtension(f.clearDot(stat.Ext))
-		filename := fmt.Sprintf("log.%s", fileExt)
 
+	for fileType, stat := range mergedFileStats {
 		// handle files without extension. eg: Makefile, Dockerfile etc
-		if !strings.HasPrefix(stat.Ext, ".") {
-			filename = stat.Ext
+		filename := fileType
+		if strings.HasPrefix(stat.Ext, ".") {
+			filename = fmt.Sprintf("log.%s", fileType)
 		}
 
-		text, err := f.generateLog(&stat, fileExt, commitInfo)
+		contentText, err := f.generateContentText(&stat, fileType, &commitInfo)
+		if err != nil {
+			return nil, err
+		}
+
+		text, err := f.generateCode(fileType, contentText, commitInfo)
 		if err != nil {
 			return nil, fmt.Errorf("log text generation failed, err: %w", err)
 		}
@@ -50,11 +70,32 @@ func (f diffGen) GenDiff(stats []FileStat, commitInfo CommitInfo) (*Diff, error)
 	return &diff, nil
 }
 
-func (f diffGen) generateLog(stat *FileStat, fileExt string, commitInfo CommitInfo) (string, error) {
-	if f.conf == nil {
-		return fmt.Sprintf(defaultLogMsgFormat, stat.Insert, stat.Delete), nil
+func (f diffGen) generateCode(fileType string, contentText string, commitInfo CommitInfo) (string, error) {
+	if tmpl, ok := f.conf.Templates[fileType]; ok {
+		codeTemplate, err := template.New("code").Parse(tmpl)
+		if err != nil {
+			return "", err
+		}
+
+		var buf bytes.Buffer
+		varMap := map[string]interface{}{
+			"Message": contentText,
+			"HM":      commitInfo.Time.Format("15:04"),
+			"Hour":    commitInfo.Time.Format("15"),
+			"Minute":  commitInfo.Time.Format("04"),
+		}
+
+		if err := codeTemplate.Execute(&buf, varMap); err != nil {
+			return "", err
+		}
+
+		return buf.String(), nil
 	}
 
+	return contentText, nil
+}
+
+func (f diffGen) generateContentText(stat *FileStat, fileType string, commitInfo *CommitInfo) (string, error) {
 	// TODO: we can move template.New to constructor, init or once.Do
 	commitTemplate, err := template.New("log").Parse(f.conf.Commit.Template)
 	if err != nil {
@@ -72,12 +113,13 @@ func (f diffGen) generateLog(stat *FileStat, fileExt string, commitInfo CommitIn
 	}
 
 	commitTemplateVarMap := map[string]interface{}{
-		"InsertCount": stat.Insert,
-		"DeleteCount": stat.Delete,
-		"Ext":         fileExt,
-		"HM":          commonVars.HM,
-		"Hour":        commonVars.Hour,
-		"Minute":      commonVars.Minute,
+		"InsertCount":   stat.Insert,
+		"DeleteCount":   stat.Delete,
+		"FileExtension": stat.Ext,
+		"FileType":      fileType,
+		"HM":            commonVars.HM,
+		"Hour":          commonVars.Hour,
+		"Minute":        commonVars.Minute,
 	}
 
 	var contentText bytes.Buffer
@@ -85,35 +127,10 @@ func (f diffGen) generateLog(stat *FileStat, fileExt string, commitInfo CommitIn
 		return "", fmt.Errorf("code content generate failed. Please check commit template in config. err: %w", err)
 	}
 
-	if tmpl, ok := f.conf.Templates[fileExt]; ok {
-		codeTemplate, err := template.New("code").Parse(tmpl)
-		if err != nil {
-			return "", err
-		}
-
-		var buf bytes.Buffer
-		varMap := map[string]interface{}{
-			"Message": contentText.String(),
-			"HM":      commonVars.HM,
-			"Hour":    commonVars.Hour,
-			"Minute":  commonVars.Minute,
-		}
-
-		if err := codeTemplate.Execute(&buf, varMap); err != nil {
-			return "", err
-		}
-
-		return buf.String(), nil
-	}
-
 	return contentText.String(), nil
 }
 
-func (f diffGen) decideFileExtension(ext string) string {
-	if f.conf == nil {
-		return ext
-	}
-
+func (f diffGen) decideNewExtension(ext string) string {
 	for typ, aliases := range f.conf.Overwrites {
 		if typ != "default" {
 			for fileType, alias := range aliases {

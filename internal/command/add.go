@@ -71,7 +71,8 @@ func AddCmdAction(ctx *cli.Context) error {
 	conf, err := config.ReadConfig(filepath.Join(statRepoPath, "config.toml"))
 	if err != nil {
 		// print error and continue with defaults when cannot read config file.
-		fmt.Println(err)
+		fmt.Printf("config file read err. Running with defaults. err: %v\n", err)
+		conf = config.Default()
 	}
 
 	commitGen := commit.NewDiffGenerator(conf)

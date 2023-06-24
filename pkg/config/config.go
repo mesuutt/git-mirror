@@ -30,3 +30,13 @@ func ReadConfig(path string) (*Config, error) {
 
 	return &conf, nil
 }
+
+func Default() *Config {
+	return &Config{
+		Commit: CommitConfig{
+			Template: "{{.InsertCount}} insertion(s), {{.DeleteCount}} deletion(s)",
+		},
+		Overwrites: nil,
+		Templates:  nil,
+	}
+}
