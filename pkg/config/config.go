@@ -8,12 +8,12 @@ import (
 )
 
 type Config struct {
-	Commit    commitConfig
-	Aliases   map[string]map[string]string
-	Templates map[string]string
+	Commit     CommitConfig
+	Overwrites map[string]map[string]string
+	Templates  map[string]string
 }
 
-type commitConfig struct {
+type CommitConfig struct {
 	Template string
 }
 
@@ -25,8 +25,7 @@ func ReadConfig(path string) (*Config, error) {
 
 	var conf Config
 	if err := toml.Unmarshal(bytes, &conf); err != nil {
-		fmt.Printf("config file parse failed: %s, error: %v\n", path, err)
-		return nil, err
+		return nil, fmt.Errorf("config file parse failed: %s, error: %w", path, err)
 	}
 
 	return &conf, nil

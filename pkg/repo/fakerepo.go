@@ -16,7 +16,7 @@ func NewFakeRepo() stdoutRepo {
 	return stdoutRepo{}
 }
 
-func (r stdoutRepo) AddStats(diff commit.Diff) error {
+func (r stdoutRepo) AddStats(diff *commit.Diff) error {
 	for _, change := range diff.Changes {
 		filePath := path.Join(change.Dir, change.Filename)
 		fmt.Printf("%s\n\t%s\n", filePath, change.Text)

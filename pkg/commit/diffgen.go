@@ -11,73 +11,64 @@ import (
 	"github.com/mesuutt/git-mirror/pkg/config"
 )
 
-const defaultCommitFormat = "%d insertion(s), %d deletion(s)"
+const defaultLogMsgFormat = "%d insertion(s), %d deletion(s)"
 
 type diffGen struct {
 	conf *config.Config
 }
 
-func NewDiffGenerator(configPath string) diffGen {
-	conf, err := config.ReadConfig(configPath)
-	if err != nil {
-		return diffGen{conf: nil}
-	}
-
+func NewDiffGenerator(conf *config.Config) diffGen {
 	return diffGen{conf: conf}
 }
 
-func (f diffGen) GenDiff(stats []FileStat) Diff {
+func (f diffGen) GenDiff(stats []FileStat, commitInfo CommitInfo) (*Diff, error) {
 	var diff Diff
 	dayParts := strings.Split(time.Now().Format("2006-01-02"), "-")
 	for _, stat := range stats {
-		ext := f.findExtensionAlias(stat.Ext)
-		filename := fmt.Sprintf("log.%s", ext)
+		fileExt := f.decideFileExtension(f.clearDot(stat.Ext))
+		filename := fmt.Sprintf("log.%s", fileExt)
 
 		// handle files without extension. eg: Makefile, Dockerfile etc
 		if !strings.HasPrefix(stat.Ext, ".") {
 			filename = stat.Ext
 		}
 
-		msg, err := f.buildMessage(&stat, ext)
+		text, err := f.generateLog(&stat, fileExt, commitInfo)
 		if err != nil {
-			panic("TODO")
+			return nil, fmt.Errorf("log text generation failed, err: %w", err)
 		}
 
 		diff.Changes = append(diff.Changes, Change{
 			Dir:       filepath.Join(dayParts[0], dayParts[1], dayParts[2]),
 			Filename:  filename,
-			Text:      msg,
+			Text:      text,
 			Insertion: stat.Insert,
 			Deletion:  stat.Delete,
 		})
 	}
 
-	return diff
+	return &diff, nil
 }
 
-func (f diffGen) buildMessage(stat *FileStat, ext string) (string, error) {
+func (f diffGen) generateLog(stat *FileStat, fileExt string, commitInfo CommitInfo) (string, error) {
 	if f.conf == nil {
-		return fmt.Sprintf(defaultCommitFormat, stat.Insert, stat.Delete), nil
+		return fmt.Sprintf(defaultLogMsgFormat, stat.Insert, stat.Delete), nil
 	}
 
-	// TODO: move template.New to init or once.Do
-	commitTempl, err := template.New("test").Parse(f.conf.Commit.Template)
+	// TODO: we can move template.New to constructor, init or once.Do
+	commitTemplate, err := template.New("log").Parse(f.conf.Commit.Template)
 	if err != nil {
 		return "", err
 	}
-
-	var commitMessage bytes.Buffer
-	fileExt := f.removeDot(ext)
-	now := time.Now() // TODO: get commit time instead now(usable especially with --dry-run)
 
 	commonVars := struct {
 		HM     string
 		Hour   string
 		Minute string
 	}{
-		HM:     now.Format("15:04"),
-		Hour:   now.Format("15"),
-		Minute: now.Format("04"),
+		HM:     commitInfo.Time.Format("15:04"),
+		Hour:   commitInfo.Time.Format("15"),
+		Minute: commitInfo.Time.Format("04"),
 	}
 
 	commitTemplateVarMap := map[string]interface{}{
@@ -89,63 +80,62 @@ func (f diffGen) buildMessage(stat *FileStat, ext string) (string, error) {
 		"Minute":      commonVars.Minute,
 	}
 
-	if err := commitTempl.Execute(&commitMessage, commitTemplateVarMap); err != nil {
-		return "", err
+	var contentText bytes.Buffer
+	if err := commitTemplate.Execute(&contentText, commitTemplateVarMap); err != nil {
+		return "", fmt.Errorf("code content generate failed. Please check commit template in config. err: %w", err)
 	}
 
 	if tmpl, ok := f.conf.Templates[fileExt]; ok {
-		wrapperTempl, err := template.New("wrapper").Parse(tmpl)
+		codeTemplate, err := template.New("code").Parse(tmpl)
 		if err != nil {
 			return "", err
 		}
 
 		var buf bytes.Buffer
 		varMap := map[string]interface{}{
-			"Message": commitMessage.String(),
+			"Message": contentText.String(),
 			"HM":      commonVars.HM,
 			"Hour":    commonVars.Hour,
 			"Minute":  commonVars.Minute,
 		}
 
-		if err := wrapperTempl.Execute(&buf, varMap); err != nil {
+		if err := codeTemplate.Execute(&buf, varMap); err != nil {
 			return "", err
 		}
 
 		return buf.String(), nil
 	}
 
-	return fmt.Sprintf(defaultCommitFormat, stat.Insert, stat.Delete), nil
+	return contentText.String(), nil
 }
 
-func (f diffGen) findExtensionAlias(ext string) string {
+func (f diffGen) decideFileExtension(ext string) string {
 	if f.conf == nil {
 		return ext
 	}
 
-	searchExt := f.removeDot(ext)
-
-	for typ, aliases := range f.conf.Aliases {
+	for typ, aliases := range f.conf.Overwrites {
 		if typ != "default" {
-			for ext, alias := range aliases {
-				if ext == searchExt {
+			for fileType, alias := range aliases {
+				if ext == fileType {
 					return alias
 				}
 			}
 		}
 	}
 
-	if aliases, ok := f.conf.Aliases["default"]; ok {
-		for ext, alias := range aliases {
-			if ext == searchExt {
+	if aliases, ok := f.conf.Overwrites["default"]; ok {
+		for fileType, alias := range aliases {
+			if ext == fileType {
 				return alias
 			}
 		}
 	}
 
-	return searchExt
+	return ext
 }
 
-func (f diffGen) removeDot(ext string) string {
+func (f diffGen) clearDot(ext string) string {
 	if strings.HasPrefix(ext, ".") {
 		return strings.Replace(ext, ".", "", 1)
 	}

@@ -1,6 +1,8 @@
 package commit
 
-type Commit struct {
-	Filename string
-	Message  string
+import "time"
+
+type CommitInfo struct {
+	Time time.Time
+	Hash string
 }

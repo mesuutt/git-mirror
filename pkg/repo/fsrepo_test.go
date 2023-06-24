@@ -41,7 +41,7 @@ func TestRepo_AddChange(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			err := repo.AddStats(commit.Diff{Changes: tt.changes})
+			err := repo.AddStats(&commit.Diff{Changes: tt.changes})
 
 			if err != nil {
 				t.Errorf("stat add failed: %v", err)
@@ -72,8 +72,8 @@ func TestRepo_AddChange_In_Same_Day(t *testing.T) {
 
 	dir := "2023/01/04"
 	filename := "log.go"
-	diff1 := commit.Diff{Changes: []commit.Change{{Insertion: 1, Deletion: 2, Filename: filename, Dir: dir, Text: "content1"}}}
-	diff2 := commit.Diff{Changes: []commit.Change{{Insertion: 3, Deletion: 4, Filename: filename, Dir: dir, Text: "content2"}}}
+	diff1 := &commit.Diff{Changes: []commit.Change{{Insertion: 1, Deletion: 2, Filename: filename, Dir: dir, Text: "content1"}}}
+	diff2 := &commit.Diff{Changes: []commit.Change{{Insertion: 3, Deletion: 4, Filename: filename, Dir: dir, Text: "content2"}}}
 
 	if err := repo.AddStats(diff1); err != nil {
 		t.Errorf("stat add failed: %v", err)

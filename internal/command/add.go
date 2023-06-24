@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/urfave/cli/v2"
 
 	"github.com/mesuutt/git-mirror/pkg/commit"
+	"github.com/mesuutt/git-mirror/pkg/config"
 	"github.com/mesuutt/git-mirror/pkg/git"
 	"github.com/mesuutt/git-mirror/pkg/repo"
 )
@@ -59,13 +61,20 @@ func AddCmdAction(ctx *cli.Context) error {
 
 	stats, err := parser.Parse(bytes.NewReader(out))
 	if err != nil {
-		return fmt.Errorf("diff output parse failed with error: `%v`", err)
+		return fmt.Errorf("diff output parse failed with error: `%w`", err)
 	}
+
 	if len(stats) == 0 {
 		return nil
 	}
 
-	commitGen := commit.NewDiffGenerator(filepath.Join(statRepoPath, "config.toml"))
+	conf, err := config.ReadConfig(filepath.Join(statRepoPath, "config.toml"))
+	if err != nil {
+		// print error and continue with defaults when cannot read config file.
+		fmt.Println(err)
+	}
+
+	commitGen := commit.NewDiffGenerator(conf)
 
 	var repoImpl repo.Repo
 	if dryRun {
@@ -76,7 +85,13 @@ func AddCmdAction(ctx *cli.Context) error {
 
 	// TODO: ignore already added commit
 	// if user run add multiple times without new commit, it should add only one commit to repo
-	if err := repoImpl.AddStats(commitGen.GenDiff(stats)); err != nil {
+	// maybe we can add commit hast to commit message, and check it at next commit
+	diff, err := commitGen.GenDiff(stats, commit.CommitInfo{Time: time.Now()})
+	if err != nil {
+		return err
+	}
+
+	if err := repoImpl.AddStats(diff); err != nil {
 		return err
 	}
 

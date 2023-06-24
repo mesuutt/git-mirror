@@ -20,7 +20,7 @@ func NewFsRepo(path string) fsRepo {
 }
 
 // AddStats writes diff stats to related files in mirror repo
-func (r fsRepo) AddStats(diff commit.Diff) error {
+func (r fsRepo) AddStats(diff *commit.Diff) error {
 	for i := range diff.Changes {
 		change := &diff.Changes[i]
 		absDirPath := filepath.Join(r.path, change.Dir)
