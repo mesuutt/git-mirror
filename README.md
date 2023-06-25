@@ -22,6 +22,7 @@ GLOBAL OPTIONS:
 #### Install
 - Grab a [binary](https://github.com/mesuutt/git-mirror/releases) or install via `go install github.com/mesuutt/git-mirror@latest`
 - Create a git repository at `~/.git-mirror`(Do not forget `git init`)
+- Copy [example config file](https://github.com/mesuutt/git-mirror/blob/main/example.config.toml) to your `~/.git-mirror` repo as `config.toml`. 
 
 #### Usage
 
@@ -29,11 +30,11 @@ git-mirror works as git post-commit hook.
 So after install it you need to add related hook to project repositories by `git-mirror install` in your repos.  
 
 When you add a new commit to your project, stats of the commit will be added to the mirror repository.
-You need to push the new commit of mirror repository in order to see contributions at your GitHub profile and contribution chart.
+
 
 ----
 
-#### Example generated mirror repo content
+#### Example generated stats repo content
 ```shell
 $ tree
 .
@@ -52,7 +53,6 @@ $ tree
 $ cat 2023/01/02/log.go
 fmt.Println("02:42 24 insertion(s), 7 deletion(s)")
 fmt.Println("03:39 83 insertion(s), 11 deletion(s)")
-fmt.Println("03:41 67 insertion(s), 20 deletion(s)")
 ```
 
 #### TODO
