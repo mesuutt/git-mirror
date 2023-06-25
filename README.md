@@ -50,9 +50,9 @@ $ tree
 
 # Example generated file content after some commits
 $ cat 2023/01/02/log.java
-7 insertion(s), 2 deletion(s)
-59 insertion(s), 6 deletion(s)
-9 insertion(s), 1 deletion(s)
+System.out.println("7 insertion(s), 2 deletion(s)");
+System.out.println("59 insertion(s), 6 deletion(s)")
+System.out.println("9 insertion(s), 1 deletion(s)");
 ```
 
 #### TODO
