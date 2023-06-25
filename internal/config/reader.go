@@ -7,7 +7,7 @@ import (
 	"github.com/pelletier/go-toml/v2"
 )
 
-func ReadConfig(path string) (*Config, error) {
+func Read(path string) (*Config, error) {
 	bytes, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
