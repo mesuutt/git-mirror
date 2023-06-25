@@ -1,5 +1,7 @@
 package commit
 
+import "time"
+
 type FileStat struct {
 	Insert int
 	Delete int
@@ -16,4 +18,9 @@ type Change struct {
 	Text      string
 	Insertion int
 	Deletion  int
+}
+
+type Meta struct {
+	Time time.Time
+	Hash string
 }

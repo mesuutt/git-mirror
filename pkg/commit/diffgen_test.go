@@ -18,7 +18,7 @@ func TestGenerateDiffWithDefaultsWhenConfigNotGiven(t *testing.T) {
 
 	gen := NewDiffGenerator(config.Default())
 	// when
-	diff, err := gen.GenDiff([]FileStat{stat}, CommitInfo{Time: time.Now()})
+	diff, err := gen.GenDiff([]FileStat{stat}, Meta{Time: time.Now()})
 
 	// then
 	assert.Nil(t, err)
@@ -34,7 +34,7 @@ func TestGenerateDiffFilenameShouldNotChangedWhenNotHasDot(t *testing.T) {
 
 	gen := NewDiffGenerator(config.Default())
 	// when
-	diff, err := gen.GenDiff([]FileStat{stat}, CommitInfo{Time: time.Now()})
+	diff, err := gen.GenDiff([]FileStat{stat}, Meta{Time: time.Now()})
 
 	// then
 	assert.Nil(t, err)
@@ -53,7 +53,7 @@ func TestGenerateDiffWithCustomLogTemplate(t *testing.T) {
 
 	// when
 	commitTime := time.Now()
-	diff, err := gen.GenDiff([]FileStat{stat}, CommitInfo{Time: commitTime})
+	diff, err := gen.GenDiff([]FileStat{stat}, Meta{Time: commitTime})
 
 	// then
 	assert.Nil(t, err)
@@ -77,7 +77,7 @@ func TestGenerateDiffWithFileTypeOverwrites(t *testing.T) {
 	})
 
 	// when
-	diff, err := gen.GenDiff([]FileStat{stat, stat2, stat3}, CommitInfo{Time: time.Now()})
+	diff, err := gen.GenDiff([]FileStat{stat, stat2, stat3}, Meta{Time: time.Now()})
 
 	// then
 	assert.Nil(t, err)
@@ -103,7 +103,7 @@ func TestGenerateDiffWithCodeTemplates(t *testing.T) {
 
 	// when
 	commitTime := time.Now()
-	diff, err := gen.GenDiff([]FileStat{stat}, CommitInfo{Time: commitTime})
+	diff, err := gen.GenDiff([]FileStat{stat}, Meta{Time: commitTime})
 
 	// then
 	assert.Nil(t, err)

@@ -87,7 +87,7 @@ func AddCmdAction(ctx *cli.Context) error {
 	// TODO: ignore already added commit
 	// if user run add multiple times without new commit, it should add only one commit to repo
 	// maybe we can add commit hast to commit message, and check it at next commit
-	diff, err := commitGen.GenDiff(stats, commit.CommitInfo{Time: time.Now()})
+	diff, err := commitGen.GenDiff(stats, commit.Meta{Time: time.Now()})
 	if err != nil {
 		return err
 	}

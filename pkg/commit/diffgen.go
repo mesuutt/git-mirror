@@ -19,7 +19,7 @@ func NewDiffGenerator(conf *config.Config) diffGen {
 	return diffGen{conf: conf}
 }
 
-func (f diffGen) GenDiff(stats []FileStat, commitInfo CommitInfo) (*Diff, error) {
+func (f diffGen) GenDiff(stats []FileStat, commitMeta Meta) (*Diff, error) {
 	mergedFileStats := make(map[string]FileStat)
 	for _, stat := range stats {
 		fileType := f.decideNewExtension(f.clearDot(stat.Ext))
@@ -48,12 +48,12 @@ func (f diffGen) GenDiff(stats []FileStat, commitInfo CommitInfo) (*Diff, error)
 			filename = fmt.Sprintf("log.%s", fileType)
 		}
 
-		contentText, err := f.generateContentText(&stat, fileType, &commitInfo)
+		contentText, err := f.generateContentText(&stat, fileType, &commitMeta)
 		if err != nil {
 			return nil, err
 		}
 
-		text, err := f.generateCode(fileType, contentText, commitInfo)
+		text, err := f.generateCode(fileType, contentText, commitMeta)
 		if err != nil {
 			return nil, fmt.Errorf("log text generation failed, err: %w", err)
 		}
@@ -70,7 +70,7 @@ func (f diffGen) GenDiff(stats []FileStat, commitInfo CommitInfo) (*Diff, error)
 	return &diff, nil
 }
 
-func (f diffGen) generateCode(fileType string, contentText string, commitInfo CommitInfo) (string, error) {
+func (f diffGen) generateCode(fileType string, contentText string, commitMeta Meta) (string, error) {
 	if tmpl, ok := f.conf.Templates[fileType]; ok {
 		codeTemplate, err := template.New("code").Parse(tmpl)
 		if err != nil {
@@ -80,9 +80,9 @@ func (f diffGen) generateCode(fileType string, contentText string, commitInfo Co
 		var buf bytes.Buffer
 		varMap := map[string]interface{}{
 			"Message": contentText,
-			"HM":      commitInfo.Time.Format("15:04"),
-			"Hour":    commitInfo.Time.Format("15"),
-			"Minute":  commitInfo.Time.Format("04"),
+			"HM":      commitMeta.Time.Format("15:04"),
+			"Hour":    commitMeta.Time.Format("15"),
+			"Minute":  commitMeta.Time.Format("04"),
 		}
 
 		if err := codeTemplate.Execute(&buf, varMap); err != nil {
@@ -95,7 +95,7 @@ func (f diffGen) generateCode(fileType string, contentText string, commitInfo Co
 	return contentText, nil
 }
 
-func (f diffGen) generateContentText(stat *FileStat, fileType string, commitInfo *CommitInfo) (string, error) {
+func (f diffGen) generateContentText(stat *FileStat, fileType string, commitMeta *Meta) (string, error) {
 	// TODO: we can move template.New to constructor, init or once.Do
 	commitTemplate, err := template.New("log").Parse(f.conf.Commit.Template)
 	if err != nil {
@@ -107,9 +107,9 @@ func (f diffGen) generateContentText(stat *FileStat, fileType string, commitInfo
 		Hour   string
 		Minute string
 	}{
-		HM:     commitInfo.Time.Format("15:04"),
-		Hour:   commitInfo.Time.Format("15"),
-		Minute: commitInfo.Time.Format("04"),
+		HM:     commitMeta.Time.Format("15:04"),
+		Hour:   commitMeta.Time.Format("15"),
+		Minute: commitMeta.Time.Format("04"),
 	}
 
 	commitTemplateVarMap := map[string]interface{}{
