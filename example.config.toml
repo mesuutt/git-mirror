@@ -1,0 +1,20 @@
+[commit]
+template = "{{.InsertCount}} insertion(s), {{.DeleteCount}} deletion(s)"
+
+[overwrites.default]
+
+yaml = "yml"
+gradle = "java"
+properties = "java"
+
+[templates]
+java = "System.out.println(\"{{.HM}} {{.Message}}\");"
+go = "fmt.Println(\"{{.HM}} {{.Message}}\")"
+Dockerfile = "RUN echo '{{.Message}}'"
+rs = "println!(\"{{.HM}} {{.Message}}\")"
+json = "{\"log\": \"{{.HM}} {{.Message}}\"}"
+yml = "log_{{.Hour}}_{{.Minute}}: \"{{.Message}}\""
+scala = "println(\"{{.HM}} {{.Message}}\")"
+py = "print(\"{{.HM}} {{.Message}}\")"
+html = "<b>{{.HM}} {{.Message}}</b>"
+js = "console.log(\"{{.HM}} {{.Message}}\");"
