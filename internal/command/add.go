@@ -22,7 +22,7 @@ var AddCmd = &cli.Command{
 		&cli.StringFlag{
 			Name:  "path",
 			Value: ".",
-			Usage: "git repo directory path",
+			Usage: "git repo directory path for creating statistics from",
 		},
 		&cli.BoolFlag{
 			Name:  "dry-run",
