@@ -1,4 +1,4 @@
-Create git activities from your commits.
+Keep your git statistics with post-commit hook.
 
 ---
 
@@ -49,23 +49,20 @@ $ tree
             └── log.yaml
 
 # Example generated file content after some commits
-$ cat 2023/01/02/log.java
-System.out.println("7 insertion(s), 2 deletion(s)");
-System.out.println("59 insertion(s), 6 deletion(s)")
-System.out.println("9 insertion(s), 1 deletion(s)");
+$ cat 2023/01/02/log.go
+fmt.Println("02:42 24 insertion(s), 7 deletion(s)")
+fmt.Println("03:39 83 insertion(s), 11 deletion(s)")
+fmt.Println("03:41 67 insertion(s), 20 deletion(s)")
 ```
 
 #### TODO
+- [x] file type overwriting (`jsx=js`)
+- [x] content template with config
+- [ ] filename template with config
+- [ ] excluding file extensions
+- [ ] separating stat dirs like `personal/`, `work/`
+- [ ] custom vars in params and templates(`-vars="project=foo-api-gateway"`)
 
-- [ ] Write better readme
-- [ ] File stat aliases: `yaml=yml,java=gradle,xml,properties`
-- [ ] commit, filename templates with config
-```shell
--vars="project=foo-api-gateway"
-log_format="{project}: {insert_count} insertion(s), {delete_count} deletion(s)"
-```
-- [ ] Funny commit messages
-- [ ] Create os packages for homebrew,apt etc.
 ----
 
 License: MIT
