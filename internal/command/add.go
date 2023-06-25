@@ -9,8 +9,8 @@ import (
 
 	"github.com/urfave/cli/v2"
 
+	"github.com/mesuutt/git-mirror/internal/config"
 	"github.com/mesuutt/git-mirror/pkg/commit"
-	"github.com/mesuutt/git-mirror/pkg/config"
 	"github.com/mesuutt/git-mirror/pkg/git"
 	"github.com/mesuutt/git-mirror/pkg/repo"
 )

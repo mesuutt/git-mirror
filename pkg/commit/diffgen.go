@@ -8,7 +8,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/mesuutt/git-mirror/pkg/config"
+	"github.com/mesuutt/git-mirror/internal/config"
 )
 
 type diffGen struct {
