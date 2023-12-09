@@ -3,9 +3,14 @@ template = "{{.InsertCount}} insertion(s), {{.DeleteCount}} deletion(s)"
 
 [overwrites.default]
 
+jsx = "js"
+tsx = "ts"
+
 yaml = "yml"
 gradle = "java"
 properties = "java"
+xml = "java"
+sbt = "scala"
 
 [templates]
 java = "System.out.println(\"{{.HM}} {{.Message}}\");"
@@ -18,3 +23,6 @@ scala = "println(\"{{.HM}} {{.Message}}\")"
 py = "print(\"{{.HM}} {{.Message}}\")"
 html = "<b>{{.HM}} {{.Message}}</b>"
 js = "console.log(\"{{.HM}} {{.Message}}\");"
+ts = "console.log(\"{{.HM}} {{.Message}}\");"
+sh = "echo \"{{.HM}} {{.Message}}\""
+sql = "-- {{.HM}} {{.Message}}"
